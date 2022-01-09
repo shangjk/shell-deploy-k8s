@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: busybox
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: busybox
+  template:
+    metadata:
+      labels:
+        run: busybox
+    spec:
+      containers:
+      - name: busybox
+        image: busybox:latest
+        imagePullPolicy: IfNotPresent
+        args:
+        - /bin/sh
+        - -c
+        - sleep 1; touch /tmp/healthy; sleep 30000
+        readinessProbe:   
+          exec:
+            command:
+            - /bin/tail
+            - -f
+            - /tmp/healthy
+          initialDelaySeconds: 10 
+          periodSeconds: 5 
